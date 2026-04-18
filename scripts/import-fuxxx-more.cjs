@@ -88,9 +88,20 @@ async function ensureCategories() {
 async function run() {
   await ensureCategories()
 
-  const uploader =
+  const existingUploader =
     (await prisma.user.findFirst({ where: { handle: 'cityamateurs' } })) ||
     (await prisma.user.findFirst())
+
+  const uploader =
+    existingUploader ||
+    (await prisma.user.create({
+      data: {
+        email: 'cityamateurs@velvettube.local',
+        name: 'City Amateurs',
+        handle: 'cityamateurs',
+        subscribers: 540000,
+      },
+    }))
 
   if (!uploader) {
     throw new Error('No uploader user found in DB')
@@ -129,7 +140,14 @@ async function run() {
       select: { id: true },
     })
 
-    const remote = await fetchVideoDetails(videoId)
+    let remote
+    try {
+      remote = await fetchVideoDetails(videoId)
+    } catch (error) {
+      console.error(`skip ${videoId}: failed to fetch details`, error.message)
+      skipped += 1
+      continue
+    }
     if (!remote?.title) {
       skipped += 1
       continue

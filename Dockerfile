@@ -23,7 +23,8 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/scripts ./scripts
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "mkdir -p /app/db && npx prisma db push && node server.js"]
+CMD ["sh", "-c", "mkdir -p /app/db && npx prisma db push && node scripts/bootstrap-render-data.cjs && node server.js"]
