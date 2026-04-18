@@ -1,0 +1,64 @@
+# dependencies
+node_modules/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# build output
+/.next/
+/out/
+/build/
+/dist/
+
+# coverage
+/coverage/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dev.log
+dev.out.log
+server.log
+
+# env
+.env
+.env.*
+!.env.example
+
+# OS/editor
+.DS_Store
+Thumbs.db
+*.pem
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# local/project artifacts
+/.vercel/
+/.turbo/
+/.qodo/
+/download/
+/examples/
+/mini-services/
+/skills/
+/test/
+/prompt/
+/workspace-*.tar
+/local-*
+
+# database/local runtime data
+/db/*.db
+/db/*.db-*
+
+# docker
+.docker/

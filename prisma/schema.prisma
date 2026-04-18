@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  avatar        String?
+  banner        String?
+  bio           String?
+  handle        String    @unique
+  subscribers   Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  videos        Video[]
+  comments      Comment[]
+  playlists     Playlist[]
+  likedVideos   VideoLike[]
+  dislikedVideos VideoDislike[]
+}
+
+model Video {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  thumbnailUrl  String
+  videoUrl      String
+  duration      Int       @default(0)
+  views         Int       @default(0)
+  likes         Int       @default(0)
+  dislikes      Int       @default(0)
+  isPublished   Boolean   @default(true)
+  privacy       String    @default("public")
+  isShort       Boolean   @default(false)
+  categoryId    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  uploaderId    String
+  uploader      User      @relation(fields: [uploaderId], references: [id])
+
+  comments      Comment[]
+  tags          VideoTag[]
+  playlistItems PlaylistItem[]
+  likedBy       VideoLike[]
+  dislikedBy    VideoDislike[]
+
+  category      Category?  @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  videos    Video[]
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+
+  videoId   String
+  video     Video     @relation(fields: [videoId], references: [id])
+
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+}
+
+model VideoLike {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id])
+
+  @@unique([userId, videoId])
+}
+
+model VideoDislike {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  videoId   String
+  video     Video    @relation(fields: [videoId], references: [id])
+
+  @@unique([userId, videoId])
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  items       PlaylistItem[]
+}
+
+model PlaylistItem {
+  id         String   @id @default(cuid())
+  position   Int
+  createdAt  DateTime @default(now())
+
+  playlistId String
+  playlist   Playlist @relation(fields: [playlistId], references: [id])
+
+  videoId    String
+  video      Video    @relation(fields: [videoId], references: [id])
+
+  @@unique([playlistId, videoId])
+}
+
+model VideoTag {
+  id     String @id @default(cuid())
+  name   String
+
+  videoId String
+  video   Video @relation(fields: [videoId], references: [id])
+
+  @@unique([videoId, name])
+}

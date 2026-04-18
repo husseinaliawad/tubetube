@@ -1,0 +1,17 @@
+.git
+.github
+node_modules
+.next
+out
+build
+coverage
+*.log
+.env
+.env.*
+db/*.db
+db/*.db-*
+skills
+examples
+download
+mini-services
+workspace-*.tar
