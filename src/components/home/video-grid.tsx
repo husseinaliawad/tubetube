@@ -28,17 +28,13 @@ export function VideoGrid({ categorySlug = null, queryKey }: VideoGridProps) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i}>
-            <Skeleton className="aspect-video rounded-xl" />
-            <div className="flex gap-3 mt-3">
-              <Skeleton className="h-9 w-9 rounded-full shrink-0" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-3 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-              </div>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="overflow-hidden rounded-xl border border-white/10 bg-[#1a1a1a]">
+            <Skeleton className="h-44 w-full rounded-none bg-zinc-800" />
+            <div className="space-y-2 p-3">
+              <Skeleton className="h-4 w-full bg-zinc-800" />
+              <Skeleton className="h-3 w-2/3 bg-zinc-800" />
             </div>
           </div>
         ))}
@@ -47,16 +43,11 @@ export function VideoGrid({ categorySlug = null, queryKey }: VideoGridProps) {
   }
 
   if (videos.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <p className="text-muted-foreground text-lg">No scenes found</p>
-        <p className="text-muted-foreground text-sm mt-1">Try selecting a different category</p>
-      </div>
-    )
+    return <p className="text-zinc-400">No videos found.</p>
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {videos.map((video) => (
         <VideoCard key={video.id} video={video} />
       ))}

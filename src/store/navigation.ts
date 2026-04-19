@@ -13,6 +13,9 @@ export type Page =
   | { type: 'category'; slug: string; name: string }
   | { type: 'notifications' }
   | { type: 'settings' }
+  | { type: 'gifs' }
+  | { type: 'shorts' }
+  | { type: 'messages' }
 
 interface NavigationState {
   currentPage: Page

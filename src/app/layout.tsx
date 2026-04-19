@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VelvetTube - Adult Video Platform",
-  description: "Discover and watch premium adult scenes on VelvetTube. A modern tube platform for performers and fans.",
+  title: "xnaik Tube - Workout Videos",
+  description: "Workout video platform with HIIT, strength training, and fitness content.",
   icons: {
-    icon: "https://picsum.photos/seed/velvettube/32/32",
+    icon: "https://picsum.photos/seed/xnaiktube/32/32",
   },
 };
 
@@ -28,6 +28,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >

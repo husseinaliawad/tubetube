@@ -7,6 +7,8 @@ export async function GET(request: NextRequest) {
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12', 10)))
     const categorySlug = searchParams.get('category')
+    const isShortParam = searchParams.get('isShort')
+    const tag = searchParams.get('tag')?.trim()
 
     const where: Record<string, unknown> = {
       isPublished: true,
@@ -15,6 +17,16 @@ export async function GET(request: NextRequest) {
 
     if (categorySlug) {
       where.category = { slug: categorySlug }
+    }
+
+    if (isShortParam === 'true') {
+      where.isShort = true
+    } else if (isShortParam === 'false') {
+      where.isShort = false
+    }
+
+    if (tag) {
+      where.tags = { some: { name: { contains: tag } } }
     }
 
     const [videos, total] = await Promise.all([

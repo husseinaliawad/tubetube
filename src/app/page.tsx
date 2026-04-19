@@ -15,6 +15,9 @@ import { LibraryPage } from '@/components/pages/library-page'
 import { CategoryPage } from '@/components/pages/category-page'
 import { NotificationsPage } from '@/components/pages/notifications-page'
 import { SettingsPage } from '@/components/pages/settings-page'
+import { GifsPage } from '@/components/pages/gifs-page'
+import { ShortsPage } from '@/components/pages/shorts-page'
+import { MessagesPage } from '@/components/pages/messages-page'
 
 export default function Home() {
   const { currentPage } = useNavigation()
@@ -45,6 +48,12 @@ export default function Home() {
         return <NotificationsPage />
       case 'settings':
         return <SettingsPage />
+      case 'gifs':
+        return <GifsPage />
+      case 'shorts':
+        return <ShortsPage />
+      case 'messages':
+        return <MessagesPage />
       default:
         return <HomePage />
     }
@@ -54,7 +63,7 @@ export default function Home() {
     <AppLayout>
       <AnimatePresence mode="wait">
         <motion.div
-          key={currentPage.type}
+          key={JSON.stringify(currentPage)}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
