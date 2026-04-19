@@ -1,9 +1,10 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { VideoCard } from './video-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Video } from '@/types'
+import { Button } from '@/components/ui/button'
 
 interface VideoGridProps {
   categorySlug?: string | null
@@ -13,18 +14,28 @@ interface VideoGridProps {
 export function VideoGrid({ categorySlug = null, queryKey }: VideoGridProps) {
   const key = queryKey ?? ['videos', categorySlug]
 
-  const { data, isLoading } = useQuery<{ videos: Video[] }>({
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery<{
+    videos: Video[]
+    pagination: {
+      page: number
+      hasNextPage: boolean
+    }
+  }>({
     queryKey: key,
-    queryFn: () => {
+    queryFn: ({ pageParam }) => {
       const params = new URLSearchParams()
       params.set('limit', '24')
+      params.set('page', String(pageParam))
       if (categorySlug) params.set('category', categorySlug)
       return fetch(`/api/videos?${params}`).then((r) => r.json())
     },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination?.hasNextPage ? lastPage.pagination.page + 1 : undefined,
     staleTime: 1000 * 60 * 2,
   })
 
-  const videos = data?.videos ?? []
+  const videos = data?.pages.flatMap((page) => page.videos) ?? []
 
   if (isLoading) {
     return (
@@ -47,10 +58,24 @@ export function VideoGrid({ categorySlug = null, queryKey }: VideoGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {videos.map((video) => (
-        <VideoCard key={video.id} video={video} />
-      ))}
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {videos.map((video) => (
+          <VideoCard key={video.id} video={video} />
+        ))}
+      </div>
+
+      {hasNextPage ? (
+        <div className="flex justify-center">
+          <Button
+            variant="secondary"
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+          >
+            {isFetchingNextPage ? 'Loading...' : 'Load More'}
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

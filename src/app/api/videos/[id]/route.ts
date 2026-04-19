@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { isAllowedVideoSource } from '@/lib/video-source'
 
 export async function GET(
   _request: NextRequest,
@@ -47,6 +48,9 @@ export async function GET(
     if (!video) {
       return NextResponse.json({ error: 'Video not found' }, { status: 404 })
     }
+    if (!isAllowedVideoSource(video.videoUrl)) {
+      return NextResponse.json({ error: 'Video source is not allowed' }, { status: 404 })
+    }
 
     return NextResponse.json({ video })
   } catch (error) {
@@ -69,6 +73,9 @@ export async function POST(
 
     if (!video) {
       return NextResponse.json({ error: 'Video not found' }, { status: 404 })
+    }
+    if (!isAllowedVideoSource(video.videoUrl)) {
+      return NextResponse.json({ error: 'Video source is not allowed' }, { status: 404 })
     }
 
     const updatedVideo = await db.video.update({

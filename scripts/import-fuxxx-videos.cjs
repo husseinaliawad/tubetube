@@ -48,6 +48,49 @@ function pickCategorySlug(title = '', categories = {}) {
   return 'amateur'
 }
 
+function toInt(value) {
+  const n = Number(value)
+  return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0
+}
+
+function normalizeHandle(value = '') {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40)
+}
+
+async function resolveUploader(remote) {
+  const channel = remote?.channel || null
+  const user = remote?.user || null
+  const sourceId = channel?.id ? `ch-${channel.id}` : user?.id ? `u-${user.id}` : null
+
+  if (!sourceId) {
+    const fallback =
+      (await prisma.user.findFirst({ where: { handle: 'cityamateurs' } })) ||
+      (await prisma.user.findFirst())
+    if (!fallback) throw new Error('No uploader user found in DB')
+    return fallback
+  }
+
+  const rawName = channel?.title || user?.username || `Fuxxx ${sourceId}`
+  const name = String(rawName).trim().slice(0, 120)
+  const handleBase = normalizeHandle(name) || `fuxxx-${sourceId}`
+  const handle = `fuxxx-${sourceId}-${handleBase}`.slice(0, 64)
+  const email = `${handle}@import.fuxxx.local`
+  // Keep subscriber counts local to this app (do not import remote counters).
+  const subscribers = 0
+  const avatar = String(channel?.user_avatar || user?.avatar || '').trim() || null
+  const bio = channel?.dir ? `Source channel: ${channel.dir}` : null
+
+  return prisma.user.upsert({
+    where: { handle },
+    update: { name, avatar, bio },
+    create: { email, name, handle, avatar, bio, subscribers },
+  })
+}
+
 async function fetchRemoteVideo(videoId) {
   const prefix = toPathPrefix(videoId)
   const apiUrl = `https://fuxxx.com/api/json/video/86400/${prefix}/${videoId}.json`
@@ -68,14 +111,6 @@ async function fetchRemoteVideo(videoId) {
 }
 
 async function run() {
-  const user =
-    (await prisma.user.findFirst({ where: { handle: 'cityamateurs' } })) ||
-    (await prisma.user.findFirst())
-
-  if (!user) {
-    throw new Error('No uploader user found in DB')
-  }
-
   const importedIds = []
 
   for (const link of sourceLinks) {
@@ -87,6 +122,7 @@ async function run() {
 
     const categorySlug = pickCategorySlug(remote.title, remote.categories)
     const category = await prisma.category.findUnique({ where: { slug: categorySlug } })
+    const uploader = await resolveUploader(remote)
 
     const tags = Object.values(remote.tags || {})
       .map((t) => String(t?.title || '').trim())
@@ -111,17 +147,18 @@ async function run() {
 
     const payload = {
       title,
-      description: [remote.description || '', `Source: ${link}`].filter(Boolean).join('\n\n'),
+      description: String(remote.description || '').trim() || null,
       thumbnailUrl,
       videoUrl: embedUrl,
       duration: toSeconds(remote.duration),
-      views: Number(remote.statistics?.viewed || 0) || 0,
-      likes: Number(remote.statistics?.likes || 0) || 0,
-      dislikes: Number(remote.statistics?.dislikes || 0) || 0,
+      // Keep engagement counters local to this app.
+      views: 0,
+      likes: 0,
+      dislikes: 0,
       isPublished: true,
       privacy: 'public',
       isShort: false,
-      uploaderId: user.id,
+      uploaderId: uploader.id,
       categoryId: category?.id || null,
     }
 

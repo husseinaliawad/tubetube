@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminRequest } from '@/lib/admin-auth'
+import { buildAllowedVideoUrlWhere, isAllowedVideoSource } from '@/lib/video-source'
 
 type StatusFilter = 'all' | 'published' | 'draft' | 'public' | 'private' | 'unlisted'
 
@@ -16,7 +17,9 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('q')?.trim() || ''
     const status = (searchParams.get('status') || 'all') as StatusFilter
 
-    const where: Record<string, unknown> = {}
+    const where: Record<string, unknown> = {
+      ...buildAllowedVideoUrlWhere(),
+    }
 
     if (status === 'published') where.isPublished = true
     if (status === 'draft') where.isPublished = false
@@ -125,6 +128,12 @@ export async function POST(request: NextRequest) {
     }
     if (!videoUrl?.trim()) {
       return NextResponse.json({ error: 'Video URL is required' }, { status: 400 })
+    }
+    if (!isAllowedVideoSource(videoUrl.trim())) {
+      return NextResponse.json(
+        { error: 'Video URL host is not allowed by source whitelist' },
+        { status: 400 }
+      )
     }
     if (!uploaderId) {
       return NextResponse.json({ error: 'Uploader is required' }, { status: 400 })

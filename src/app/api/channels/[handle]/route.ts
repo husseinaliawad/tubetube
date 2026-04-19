@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { buildAllowedVideoUrlWhere } from '@/lib/video-source'
 
 export async function GET(
   _request: NextRequest,
@@ -15,6 +16,7 @@ export async function GET(
           where: {
             isPublished: true,
             privacy: 'public',
+            ...buildAllowedVideoUrlWhere(),
           },
           orderBy: { createdAt: 'desc' },
           include: {

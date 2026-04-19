@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { formatViews, formatDate } from '@/lib/format'
 import { useNavigation } from '@/store/navigation'
+import { isAllowedVideoSource } from '@/lib/video-source'
 import { type Video } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -17,7 +18,6 @@ import {
   Share2,
   Bookmark,
   Flag,
-  ExternalLink,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -27,6 +27,16 @@ interface VideoPlayerProps {
 
 function resolveEmbedUrl(rawUrl: string) {
   if (!rawUrl) return null
+
+  const xhamsterEmbedMatch = rawUrl.match(/^https?:\/\/(?:www\.)?xhamster2?\.com\/embed\/([a-zA-Z0-9]+)/i)
+  if (xhamsterEmbedMatch) {
+    return `https://xhamster2.com/embed/${xhamsterEmbedMatch[1]}`
+  }
+
+  const xhamsterPageMatch = rawUrl.match(/^https?:\/\/(?:www\.)?xhamster2?\.com\/videos\/.*-(xh[a-zA-Z0-9]+)/i)
+  if (xhamsterPageMatch) {
+    return `https://xhamster2.com/embed/${xhamsterPageMatch[1]}`
+  }
 
   const embedMatch = rawUrl.match(/^https?:\/\/(?:www\.)?fuxxx\.com\/embed\/(\d+)/i)
   if (embedMatch) {
@@ -51,15 +61,17 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
   const [likeCount, setLikeCount] = useState(video.likes)
   const [dislikeCount, setDislikeCount] = useState(video.dislikes)
 
+  const allowedSource = useMemo(() => isAllowedVideoSource(video.videoUrl), [video.videoUrl])
   const embedUrl = useMemo(() => resolveEmbedUrl(video.videoUrl), [video.videoUrl])
 
   const playbackUrl = useMemo(() => {
+    if (!allowedSource) return ''
     if (!video.videoUrl || embedUrl) return ''
     if (/^https?:\/\//i.test(video.videoUrl)) {
       return `/api/proxy/video?url=${encodeURIComponent(video.videoUrl)}`
     }
     return video.videoUrl
-  }, [video.videoUrl, embedUrl])
+  }, [video.videoUrl, embedUrl, allowedSource])
 
   const handleLike = () => {
     if (liked) {
@@ -115,12 +127,24 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
   return (
     <div className="space-y-4">
       <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
-        {embedUrl ? (
+        {!allowedSource ? (
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center p-4">
+            <div className="text-center text-white space-y-3 max-w-md">
+              <p className="text-sm">
+                This video source is blocked by the site whitelist policy.
+              </p>
+              <p className="text-xs text-zinc-300">
+                Only videos hosted on your allowed domains can be played.
+              </p>
+            </div>
+          </div>
+        ) : embedUrl ? (
           <iframe
             key={embedUrl}
             src={embedUrl}
             className="w-full h-full border-0"
             allow="autoplay; fullscreen; picture-in-picture"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
             allowFullScreen
             referrerPolicy="no-referrer-when-downgrade"
           />
@@ -143,15 +167,9 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
                   <p className="text-sm">
                     This source blocked in-browser playback (host protection, expired token, or invalid stream).
                   </p>
-                  <a
-                    href={video.videoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-sm bg-white/10 hover:bg-white/20 px-3 py-2 rounded-md"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Open Source URL
-                  </a>
+                  <p className="text-xs text-zinc-300">
+                    Playback is restricted by the upstream host. This app will keep you on this page.
+                  </p>
                 </div>
               </div>
             )}
@@ -181,7 +199,9 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
                   {video.uploader.name || video.uploader.handle}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {video.uploader.subscribers.toLocaleString()} followers
+                  {video.uploader.subscribers > 0
+                    ? `${video.uploader.subscribers.toLocaleString()} followers`
+                    : 'Followers hidden by source'}
                 </p>
               </div>
             </button>

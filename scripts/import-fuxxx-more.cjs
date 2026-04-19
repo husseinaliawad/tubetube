@@ -30,6 +30,61 @@ function pickCategorySlug(title = '', categories = {}) {
   return 'amateur'
 }
 
+function toInt(value) {
+  const n = Number(value)
+  return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0
+}
+
+function normalizeHandle(value = '') {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40)
+}
+
+async function resolveUploader(remote) {
+  const channel = remote?.channel || null
+  const user = remote?.user || null
+
+  // Prefer channel identity because it is more stable across videos.
+  const sourceId = channel?.id ? `ch-${channel.id}` : user?.id ? `u-${user.id}` : null
+  if (!sourceId) {
+    const fallback =
+      (await prisma.user.findFirst({ where: { handle: 'cityamateurs' } })) ||
+      (await prisma.user.findFirst())
+    if (!fallback) throw new Error('No uploader user found in DB')
+    return fallback
+  }
+
+  const rawName = channel?.title || user?.username || `Fuxxx ${sourceId}`
+  const name = String(rawName).trim().slice(0, 120)
+  const handleBase = normalizeHandle(name) || `fuxxx-${sourceId}`
+  const handle = `fuxxx-${sourceId}-${handleBase}`.slice(0, 64)
+  const email = `${handle}@import.fuxxx.local`
+  // Keep subscriber counts local to this app (do not import remote counters).
+  const subscribers = 0
+  const avatar = String(channel?.user_avatar || user?.avatar || '').trim() || null
+  const bio = channel?.dir ? `Source channel: ${channel.dir}` : null
+
+  return prisma.user.upsert({
+    where: { handle },
+    update: {
+      name,
+      avatar,
+      bio,
+    },
+    create: {
+      email,
+      name,
+      handle,
+      avatar,
+      bio,
+      subscribers,
+    },
+  })
+}
+
 async function fetchLatestPage(page) {
   const url = `https://fuxxx.com/api/json/videos2/86400/str/latest-updates/24/.0.${page}.all...json`
   const res = await fetch(url, {
@@ -88,25 +143,6 @@ async function ensureCategories() {
 async function run() {
   await ensureCategories()
 
-  const existingUploader =
-    (await prisma.user.findFirst({ where: { handle: 'cityamateurs' } })) ||
-    (await prisma.user.findFirst())
-
-  const uploader =
-    existingUploader ||
-    (await prisma.user.create({
-      data: {
-        email: 'cityamateurs@velvettube.local',
-        name: 'City Amateurs',
-        handle: 'cityamateurs',
-        subscribers: 540000,
-      },
-    }))
-
-  if (!uploader) {
-    throw new Error('No uploader user found in DB')
-  }
-
   const candidates = []
   let page = START_PAGE
 
@@ -161,19 +197,18 @@ async function run() {
       .filter(Boolean)
       .slice(0, 20)
 
-    const sourceLink = `https://fuxxx.com/videos/${videoId}/${remote.dir || ''}/`
+    const uploader = await resolveUploader(remote)
 
     const data = {
       title: String(remote.title).replace(/\s+/g, ' ').trim(),
-      description: [String(remote.description || '').trim(), `Source: ${sourceLink}`]
-        .filter(Boolean)
-        .join('\n\n'),
+      description: String(remote.description || '').trim() || null,
       thumbnailUrl: remote.thumbsrc || remote.thumb || '',
       videoUrl: embedUrl,
       duration: toSeconds(remote.duration),
-      views: Number(remote.statistics?.viewed || 0) || 0,
-      likes: Number(remote.statistics?.likes || 0) || 0,
-      dislikes: Number(remote.statistics?.dislikes || 0) || 0,
+      // Keep engagement counters local to this app.
+      views: 0,
+      likes: 0,
+      dislikes: 0,
       isPublished: true,
       privacy: 'public',
       isShort: false,

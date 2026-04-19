@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { buildAllowedVideoUrlWhere } from '@/lib/video-source'
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {
       isPublished: true,
       privacy: 'public',
+      ...buildAllowedVideoUrlWhere(),
     }
 
     if (categorySlug) {
