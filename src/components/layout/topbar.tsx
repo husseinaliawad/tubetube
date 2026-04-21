@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Play, Video, Bell, CircleUserRound } from 'lucide-react'
+import { Play, Bell, CircleUserRound } from 'lucide-react'
 import { useNavigation } from '@/store/navigation'
 
 export function TopBar() {
@@ -35,9 +35,20 @@ export function TopBar() {
           />
         </form>
 
-        <div className="flex items-center gap-3 text-zinc-200 md:gap-4">
-          <button onClick={() => navigate({ type: 'upload' })} title="Upload">
-            <Video className="h-5 w-5" />
+        <div className="flex items-center gap-2 text-zinc-200 md:gap-3">
+          <button
+            onClick={() => navigate({ type: 'search', query: 'straight' })}
+            className="rounded-full border border-red-500/70 bg-red-600/20 px-3 py-1 text-xs font-semibold text-red-200 transition-colors hover:bg-red-600/35"
+            title="Version 1 - Straight"
+          >
+            Straight
+          </button>
+          <button
+            onClick={() => navigate({ type: 'search', query: 'gay' })}
+            className="rounded-full border border-zinc-500 px-3 py-1 text-xs font-semibold text-zinc-200 transition-colors hover:border-red-500 hover:text-white"
+            title="Version 1 - Gay"
+          >
+            Gay
           </button>
           <button onClick={() => navigate({ type: 'notifications' })} title="Notifications">
             <Bell className="h-5 w-5" />

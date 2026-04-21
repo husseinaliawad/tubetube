@@ -5,6 +5,7 @@ import { Zap } from 'lucide-react'
 import { useNavigation } from '@/store/navigation'
 import type { Video } from '@/types'
 import { formatViews, formatDuration } from '@/lib/format'
+import { AdSlot } from '@/components/ads/ad-slot'
 
 export function ShortsPage() {
   const { navigate } = useNavigation()
@@ -23,10 +24,11 @@ export function ShortsPage() {
           <Zap className="h-5 w-5 text-red-500" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-white">Workout Shorts</h1>
+          <h1 className="text-xl font-bold text-zinc-900">Workout Shorts</h1>
           <p className="text-sm text-zinc-400">Only short-form content appears here</p>
         </div>
       </div>
+      <AdSlot title="Shorts Sponsor" />
 
       {isLoading ? (
         <p className="text-zinc-400">Loading shorts...</p>

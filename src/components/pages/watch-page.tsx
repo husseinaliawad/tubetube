@@ -7,6 +7,7 @@ import { CommentSection } from '@/components/watch/comment-section'
 import { RecommendedSidebar } from '@/components/watch/recommended-sidebar'
 import { VideoStoryboard } from '@/components/watch/video-storyboard'
 import { RelatedVideos } from '@/components/watch/related-videos'
+import { AdSlot } from '@/components/ads/ad-slot'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Video } from '@/types'
 
@@ -74,6 +75,7 @@ export function WatchPage({ videoId }: WatchPageProps) {
         <div className="flex-1 min-w-0 space-y-6">
           <VideoPlayer video={video} />
           <VideoStoryboard thumbnailUrl={video.thumbnailUrl} duration={video.duration} />
+          <AdSlot title="Video Page Sponsor" />
           <RelatedVideos currentVideoId={videoId} />
           <CommentSection videoId={videoId} />
         </div>

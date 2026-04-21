@@ -5,6 +5,7 @@ import { Film } from 'lucide-react'
 import type { Video } from '@/types'
 import { useNavigation } from '@/store/navigation'
 import { formatViews, formatDate, formatDuration } from '@/lib/format'
+import { AdSlot } from '@/components/ads/ad-slot'
 
 export function GifsPage() {
   const { navigate } = useNavigation()
@@ -23,10 +24,11 @@ export function GifsPage() {
           <Film className="h-5 w-5 text-red-500" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-white">Workout GIFs</h1>
+          <h1 className="text-xl font-bold text-zinc-900">Workout GIFs</h1>
           <p className="text-sm text-zinc-400">Only GIF-style clips appear here</p>
         </div>
       </div>
+      <AdSlot title="GIFs Sponsor" />
 
       {isLoading ? (
         <p className="text-zinc-400">Loading GIF feed...</p>
@@ -59,4 +61,3 @@ export function GifsPage() {
     </div>
   )
 }
-
