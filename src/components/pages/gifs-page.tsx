@@ -24,7 +24,7 @@ export function GifsPage() {
           <Film className="h-5 w-5 text-red-500" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-zinc-900">Workout GIFs</h1>
+          <h1 className="text-xl font-bold text-white">Workout GIFs</h1>
           <p className="text-sm text-zinc-400">Only GIF-style clips appear here</p>
         </div>
       </div>
@@ -40,11 +40,16 @@ export function GifsPage() {
             <button
               key={video.id}
               onClick={() => navigate({ type: 'watch', videoId: video.id })}
-              className="overflow-hidden rounded-xl border border-white/10 bg-[#1a1a1a] text-left transition-transform hover:-translate-y-1"
+              className="group overflow-hidden rounded-2xl border border-white/10 bg-[#11141b] text-left shadow-[0_10px_24px_rgba(0,0,0,0.25)] transition hover:-translate-y-1 hover:border-red-500/35"
             >
               <div className="relative aspect-video">
-                <img src={video.thumbnailUrl} alt={video.title} className="h-full w-full object-cover" />
-                <span className="absolute bottom-2 right-2 rounded bg-black/80 px-2 py-0.5 text-xs">
+                <img
+                  src={video.thumbnailUrl}
+                  alt={video.title}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <span className="absolute bottom-2 right-2 rounded bg-black/80 px-2 py-0.5 text-xs text-white">
                   {formatDuration(video.duration)}
                 </span>
               </div>

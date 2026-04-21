@@ -23,8 +23,8 @@ export function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/15 bg-[#0f0f0f] px-2 py-2">
-      <div className="mx-auto flex max-w-4xl items-center justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0b0d]/95 px-2 py-2 backdrop-blur">
+      <div className="mx-auto flex max-w-4xl items-center justify-around rounded-xl border border-white/10 bg-white/[0.03] px-1 py-1">
         {navItems.map((item) => {
           const Icon = item.icon
           return (
@@ -32,8 +32,10 @@ export function BottomNav() {
               key={item.key}
               onClick={() => navigate(item.page)}
               className={cn(
-                'flex min-w-[64px] flex-col items-center gap-1 rounded-md px-3 py-1 text-xs transition-colors',
-                isActive(item.key) ? 'text-white' : 'text-zinc-400 hover:text-white'
+                'flex min-w-[64px] flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition',
+                isActive(item.key)
+                  ? 'bg-red-600/15 text-red-400'
+                  : 'text-zinc-400 hover:bg-white/10 hover:text-white'
               )}
             >
               <Icon className="h-5 w-5" />

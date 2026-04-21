@@ -41,11 +41,11 @@ export function VideoGrid({ categorySlug = null, queryKey }: VideoGridProps) {
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="overflow-hidden rounded-xl border border-white/10 bg-[#1a1a1a]">
-            <Skeleton className="h-44 w-full rounded-none bg-zinc-800" />
+          <div key={i} className="overflow-hidden rounded-2xl border border-white/10 bg-[#11141b]">
+            <Skeleton className="h-44 w-full rounded-none bg-zinc-800/70" />
             <div className="space-y-2 p-3">
-              <Skeleton className="h-4 w-full bg-zinc-800" />
-              <Skeleton className="h-3 w-2/3 bg-zinc-800" />
+              <Skeleton className="h-4 w-full bg-zinc-800/70" />
+              <Skeleton className="h-3 w-2/3 bg-zinc-800/70" />
             </div>
           </div>
         ))}
@@ -54,7 +54,7 @@ export function VideoGrid({ categorySlug = null, queryKey }: VideoGridProps) {
   }
 
   if (videos.length === 0) {
-    return <p className="text-zinc-400">No videos found.</p>
+    return <p className="rounded-xl border border-white/10 bg-[#11141b] px-4 py-3 text-zinc-400">No videos found.</p>
   }
 
   return (
