@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { buildAllowedVideoUrlWhere } from '@/lib/video-source'
 
@@ -10,25 +11,69 @@ export async function GET(request: NextRequest) {
     const categorySlug = searchParams.get('category')
     const isShortParam = searchParams.get('isShort')
     const tag = searchParams.get('tag')?.trim()
+    const feed = (searchParams.get('feed') || '').trim().toLowerCase()
 
-    const where: Record<string, unknown> = {
+    const where: Prisma.VideoWhereInput = {
       isPublished: true,
       privacy: 'public',
       ...buildAllowedVideoUrlWhere(),
     }
+    const andFilters: Prisma.VideoWhereInput[] = []
 
     if (categorySlug) {
-      where.category = { slug: categorySlug }
+      andFilters.push({ category: { slug: categorySlug } })
     }
 
     if (isShortParam === 'true') {
-      where.isShort = true
+      andFilters.push({ isShort: true })
     } else if (isShortParam === 'false') {
-      where.isShort = false
+      andFilters.push({ isShort: false })
     }
 
     if (tag) {
-      where.tags = { some: { name: { contains: tag } } }
+      andFilters.push({ tags: { some: { name: { contains: tag } } } })
+    }
+
+    if (feed === 'shorts') {
+      andFilters.push({
+        OR: [
+          { isShort: true },
+          {
+            AND: [
+              { duration: { gt: 30 } },
+              { duration: { lte: 120 } },
+            ],
+          },
+        ],
+      })
+      andFilters.push({
+        NOT: {
+          tags: {
+            some: { name: { contains: 'gif' } },
+          },
+        },
+      })
+    } else if (feed === 'gifs') {
+      andFilters.push({ isShort: false })
+      andFilters.push({
+        OR: [
+          {
+            tags: {
+              some: { name: { contains: 'gif' } },
+            },
+          },
+          {
+            AND: [
+              { duration: { gt: 0 } },
+              { duration: { lte: 30 } },
+            ],
+          },
+        ],
+      })
+    }
+
+    if (andFilters.length > 0) {
+      where.AND = andFilters
     }
 
     const [videos, total] = await Promise.all([

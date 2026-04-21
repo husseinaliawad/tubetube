@@ -56,7 +56,6 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
   const [liked, setLiked] = useState(false)
   const [disliked, setDisliked] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [subscribed, setSubscribed] = useState(false)
   const [playbackError, setPlaybackError] = useState(false)
   const [likeCount, setLikeCount] = useState(video.likes)
   const [dislikeCount, setDislikeCount] = useState(video.dislikes)
@@ -113,11 +112,6 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
   const handleSave = () => {
     setSaved(!saved)
     toast.success(saved ? 'Removed from favorites' : 'Saved to Favorites')
-  }
-
-  const handleSubscribe = () => {
-    setSubscribed((prev) => !prev)
-    toast.success(subscribed ? 'Unfollowed' : `Following ${video.uploader.handle}`)
   }
 
   const handleReport = () => {
@@ -182,34 +176,6 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
           {video.title}
         </h1>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-3">
-          <div className="flex items-center gap-3">
-            <button
-              className="flex items-center gap-3"
-              onClick={() => navigate({ type: 'channel', handle: video.uploader.handle })}
-            >
-              <div className="h-10 w-10 rounded-full bg-secondary overflow-hidden">
-                <img
-                  src={video.uploader.avatar || 'https://picsum.photos/seed/default/40/40'}
-                  alt={video.uploader.name || ''}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                  {video.uploader.name || video.uploader.handle}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {video.uploader.subscribers > 0
-                    ? `${video.uploader.subscribers.toLocaleString()} followers`
-                    : 'Followers hidden by source'}
-                </p>
-              </div>
-            </button>
-            <Button size="sm" className="rounded-full px-5" onClick={handleSubscribe}>
-              {subscribed ? 'Following' : 'Follow'}
-            </Button>
-          </div>
-
           <div className="flex items-center gap-1 flex-wrap">
             <div className="flex items-center bg-secondary rounded-full overflow-hidden">
               <Tooltip>

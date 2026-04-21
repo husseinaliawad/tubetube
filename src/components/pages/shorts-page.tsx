@@ -10,7 +10,7 @@ export function ShortsPage() {
   const { navigate } = useNavigation()
   const { data, isLoading } = useQuery<{ videos: Video[] }>({
     queryKey: ['shorts-feed'],
-    queryFn: () => fetch('/api/videos?limit=24&isShort=true').then((r) => r.json()),
+    queryFn: () => fetch('/api/videos?limit=24&feed=shorts').then((r) => r.json()),
     staleTime: 1000 * 60 * 2,
   })
 
@@ -24,7 +24,7 @@ export function ShortsPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-white">Workout Shorts</h1>
-          <p className="text-sm text-zinc-400">Backend filter: isShort=true</p>
+          <p className="text-sm text-zinc-400">Only short-form content appears here</p>
         </div>
       </div>
 

@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { useNavigation } from '@/store/navigation'
-import { formatViews, formatDuration, formatDate } from '@/lib/format'
+import { formatViews, formatDuration } from '@/lib/format'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { Video } from '@/types'
@@ -58,9 +58,6 @@ export function RecommendedSidebar({ currentVideoId }: RecommendedSidebarProps) 
                   {video.title}
                 </h4>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {video.uploader.name || video.uploader.handle}
-                </p>
-                <p className="text-xs text-muted-foreground">
                   {formatViews(video.views)}
                 </p>
               </div>

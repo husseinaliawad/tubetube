@@ -10,11 +10,11 @@ export function GifsPage() {
   const { navigate } = useNavigation()
   const { data, isLoading } = useQuery<{ videos: Video[] }>({
     queryKey: ['gifs-feed'],
-    queryFn: () => fetch('/api/videos?limit=24').then((r) => r.json()),
+    queryFn: () => fetch('/api/videos?limit=24&feed=gifs').then((r) => r.json()),
     staleTime: 1000 * 60 * 2,
   })
 
-  const videos = (data?.videos ?? []).slice(0, 12)
+  const videos = data?.videos ?? []
 
   return (
     <div className="space-y-6">
@@ -24,7 +24,7 @@ export function GifsPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-white">Workout GIFs</h1>
-          <p className="text-sm text-zinc-400">Live feed from backend videos endpoint</p>
+          <p className="text-sm text-zinc-400">Only GIF-style clips appear here</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@ export function GifsPage() {
               <div className="space-y-1 p-3">
                 <h3 className="line-clamp-2 text-sm font-medium text-white">{video.title}</h3>
                 <p className="text-xs text-zinc-400">
-                  {video.uploader.name || video.uploader.handle} • {formatViews(video.views)} • {formatDate(video.createdAt)}
+                  {formatViews(video.views)} • {formatDate(video.createdAt)}
                 </p>
               </div>
             </button>
@@ -59,3 +59,4 @@ export function GifsPage() {
     </div>
   )
 }
+

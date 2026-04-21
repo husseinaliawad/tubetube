@@ -26,9 +26,10 @@ export function VideoCard({ video }: VideoCardProps) {
       <div className="space-y-1 p-3">
         <h3 className="line-clamp-2 text-sm font-medium leading-5 text-white">{video.title}</h3>
         <p className="text-xs text-zinc-400">
-          {video.uploader.name || video.uploader.handle} • {formatViews(video.views)} • {formatDate(video.createdAt)}
+          {formatViews(video.views)} • {formatDate(video.createdAt)}
         </p>
       </div>
     </button>
   )
 }
+

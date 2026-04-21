@@ -5,6 +5,8 @@ import { useQuery } from '@tanstack/react-query'
 import { VideoPlayer } from '@/components/watch/video-player'
 import { CommentSection } from '@/components/watch/comment-section'
 import { RecommendedSidebar } from '@/components/watch/recommended-sidebar'
+import { VideoStoryboard } from '@/components/watch/video-storyboard'
+import { RelatedVideos } from '@/components/watch/related-videos'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Video } from '@/types'
 
@@ -71,6 +73,8 @@ export function WatchPage({ videoId }: WatchPageProps) {
         {/* Main Content */}
         <div className="flex-1 min-w-0 space-y-6">
           <VideoPlayer video={video} />
+          <VideoStoryboard thumbnailUrl={video.thumbnailUrl} duration={video.duration} />
+          <RelatedVideos currentVideoId={videoId} />
           <CommentSection videoId={videoId} />
         </div>
 

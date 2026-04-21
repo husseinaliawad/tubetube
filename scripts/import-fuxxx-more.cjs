@@ -196,6 +196,12 @@ async function run() {
       .map((t) => String(t?.title || '').trim())
       .filter(Boolean)
       .slice(0, 20)
+    const durationSeconds = toSeconds(remote.duration)
+    const isGifStyle = durationSeconds > 0 && durationSeconds <= 30
+    const isShort = durationSeconds > 0 && durationSeconds <= 120
+    if (isGifStyle && !tags.some((tag) => tag.toLowerCase() === 'gif')) {
+      tags.unshift('gif')
+    }
 
     const uploader = await resolveUploader(remote)
 
@@ -204,14 +210,14 @@ async function run() {
       description: String(remote.description || '').trim() || null,
       thumbnailUrl: remote.thumbsrc || remote.thumb || '',
       videoUrl: embedUrl,
-      duration: toSeconds(remote.duration),
+      duration: durationSeconds,
       // Keep engagement counters local to this app.
       views: 0,
       likes: 0,
       dislikes: 0,
       isPublished: true,
       privacy: 'public',
-      isShort: false,
+      isShort,
       uploaderId: uploader.id,
       categoryId: category?.id || null,
     }
