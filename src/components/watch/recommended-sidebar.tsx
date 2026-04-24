@@ -43,7 +43,7 @@ export function RecommendedSidebar({ currentVideoId }: RecommendedSidebarProps) 
               className="flex gap-2 w-full text-left group"
               onClick={() => navigate({ type: 'watch', videoId: video.id })}
             >
-              <div className="relative w-40 shrink-0 aspect-video rounded-lg overflow-hidden bg-secondary">
+              <div className="relative w-40 shrink-0 aspect-video overflow-hidden rounded bg-slate-200">
                 <img
                   src={video.thumbnailUrl}
                   alt={video.title}
@@ -54,10 +54,10 @@ export function RecommendedSidebar({ currentVideoId }: RecommendedSidebarProps) 
                 </div>
               </div>
               <div className="flex-1 min-w-0 py-0.5">
-                <h4 className="text-sm font-medium leading-4 line-clamp-2 text-foreground group-hover:text-primary transition-colors">
+                <h4 className="line-clamp-2 text-sm font-medium leading-4 text-slate-950 transition-colors group-hover:text-sky-700">
                   {video.title}
                 </h4>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="mt-1 text-xs text-slate-600">
                   {formatViews(video.views)}
                 </p>
               </div>

@@ -84,7 +84,7 @@ export function CommentSection({ videoId }: CommentSectionProps) {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-bold">
+      <h3 className="text-lg font-bold text-slate-950">
         {comments.length} {comments.length === 1 ? 'Comment' : 'Comments'}
       </h3>
 
@@ -100,7 +100,7 @@ export function CommentSection({ videoId }: CommentSectionProps) {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             rows={2}
-            className="resize-none bg-transparent border-border focus-visible:ring-1"
+            className="resize-none border-slate-300 bg-white text-slate-950 focus-visible:ring-1"
           />
           <div className="flex justify-end gap-2">
             <Button
@@ -196,20 +196,20 @@ function CommentItem({
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-foreground">
+            <span className="text-sm font-medium text-slate-950">
               {comment.user.name || comment.user.handle}
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-slate-500">
               {formatDate(comment.createdAt)}
             </span>
           </div>
-          <p className="text-sm text-foreground mt-0.5">{comment.content}</p>
+          <p className="mt-0.5 text-sm text-slate-800">{comment.content}</p>
           <div className="flex items-center gap-3 mt-1">
-            <button className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+            <button className="flex items-center gap-1 text-slate-500 transition-colors hover:text-slate-950">
               <ThumbsUp className="h-3.5 w-3.5" />
             </button>
             <button
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium"
+              className="text-xs font-medium text-slate-500 transition-colors hover:text-slate-950"
               onClick={() => onReplyClick(comment.id)}
             >
               Reply
@@ -224,7 +224,7 @@ function CommentItem({
                 value={replyText}
                 onChange={(e) => onReplyTextChange(e.target.value)}
                 rows={1}
-                className="resize-none bg-transparent border-border text-sm"
+                className="resize-none border-slate-300 bg-white text-sm text-slate-950"
                 autoFocus
               />
               <div className="flex gap-1">
@@ -253,7 +253,7 @@ function CommentItem({
         <div className="ml-12">
           <button
             onClick={onToggleReplies}
-            className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            className="flex items-center gap-1.5 text-sm font-medium text-sky-700 transition-colors hover:text-sky-900"
           >
             {expanded ? (
               <ChevronUp className="h-4 w-4" />
@@ -276,14 +276,14 @@ function CommentItem({
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-foreground">
+                      <span className="text-xs font-medium text-slate-950">
                         {reply.user.name || reply.user.handle}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-slate-500">
                         {formatDate(reply.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm text-foreground mt-0.5">{reply.content}</p>
+                    <p className="mt-0.5 text-sm text-slate-800">{reply.content}</p>
                   </div>
                 </div>
               ))}

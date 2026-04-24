@@ -58,8 +58,8 @@ export function WatchPage({ videoId }: WatchPageProps) {
   if (!data?.video) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <p className="text-xl font-semibold text-foreground">Scene not found</p>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-xl font-semibold text-slate-950">Scene not found</p>
+        <p className="mt-2 text-slate-600">
           The scene you&apos;re looking for doesn&apos;t exist or has been removed.
         </p>
       </div>

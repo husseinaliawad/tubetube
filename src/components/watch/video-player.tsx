@@ -172,18 +172,18 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
       </div>
 
       <div>
-        <h1 className="text-lg md:text-xl font-bold text-foreground leading-tight">
+        <h1 className="text-lg md:text-xl font-bold text-slate-950 leading-tight">
           {video.title}
         </h1>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-3">
           <div className="flex items-center gap-1 flex-wrap">
-            <div className="flex items-center bg-secondary rounded-full overflow-hidden">
+            <div className="flex items-center overflow-hidden rounded-full bg-slate-100 text-slate-900">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`rounded-l-full rounded-r-none px-3 gap-1.5 ${liked ? 'text-white bg-white/10' : ''}`}
+                    className={`rounded-l-full rounded-r-none px-3 gap-1.5 hover:bg-slate-200 ${liked ? 'bg-sky-600 text-white hover:bg-sky-700' : ''}`}
                     onClick={handleLike}
                   >
                     <ThumbsUp className="h-4 w-4" />
@@ -192,13 +192,13 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
                 </TooltipTrigger>
                 <TooltipContent>Like</TooltipContent>
               </Tooltip>
-              <Separator orientation="vertical" className="h-6 bg-border" />
+              <Separator orientation="vertical" className="h-6 bg-slate-300" />
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`rounded-r-none rounded-l-none px-3 gap-1.5 ${disliked ? 'text-white bg-white/10' : ''}`}
+                    className={`rounded-r-none rounded-l-none px-3 gap-1.5 hover:bg-slate-200 ${disliked ? 'bg-slate-700 text-white hover:bg-slate-800' : ''}`}
                     onClick={handleDislike}
                   >
                     <ThumbsDown className="h-4 w-4" />
@@ -211,7 +211,7 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="secondary" size="sm" className="rounded-full gap-1.5 px-3" onClick={handleShare}>
+                <Button variant="secondary" size="sm" className="rounded-full gap-1.5 bg-slate-100 px-3 text-slate-950 hover:bg-slate-200" onClick={handleShare}>
                   <Share2 className="h-4 w-4" />
                   <span className="text-xs">Share</span>
                 </Button>
@@ -224,7 +224,7 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
                 <Button
                   variant="secondary"
                   size="sm"
-                  className={`rounded-full gap-1.5 px-3 ${saved ? 'bg-primary text-primary-foreground' : ''}`}
+                  className={`rounded-full gap-1.5 px-3 ${saved ? 'bg-sky-600 text-white hover:bg-sky-700' : 'bg-slate-100 text-slate-950 hover:bg-slate-200'}`}
                   onClick={handleSave}
                 >
                   <Bookmark className={`h-4 w-4 ${saved ? 'fill-current' : ''}`} />
@@ -239,7 +239,7 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="rounded-full gap-1.5 px-3"
+                  className="rounded-full gap-1.5 px-3 text-slate-950 hover:bg-slate-100"
                   onClick={handleReport}
                 >
                   <Flag className="h-4 w-4" />
@@ -251,19 +251,19 @@ export function VideoPlayer({ video }: VideoPlayerProps) {
           </div>
         </div>
 
-        <div className="mt-3 p-3 rounded-xl bg-secondary text-sm">
-          <p className="font-medium text-foreground">
+        <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-950 shadow-sm">
+          <p className="font-medium text-slate-950">
             {formatViews(video.views)} &bull; {formatDate(video.createdAt)}
           </p>
           {video.description && (
-            <p className="text-muted-foreground mt-2 whitespace-pre-wrap">{video.description}</p>
+            <p className="mt-2 whitespace-pre-wrap text-slate-700">{video.description}</p>
           )}
           {video.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {video.tags.map((tag) => (
                 <span
                   key={tag.name}
-                  className="text-xs text-primary hover:text-primary/80 cursor-pointer"
+                  className="cursor-pointer text-xs text-sky-700 hover:text-sky-900"
                   onClick={() => navigate({ type: 'search', query: tag.name })}
                 >
                   #{tag.name}

@@ -39,13 +39,13 @@ export function VideoGrid({ categorySlug = null, queryKey }: VideoGridProps) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="overflow-hidden rounded-2xl border border-white/10 bg-[#11141b]">
-            <Skeleton className="h-44 w-full rounded-none bg-zinc-800/70" />
+          <div key={i} className="overflow-hidden rounded bg-white shadow-sm">
+            <Skeleton className="h-44 w-full rounded-none bg-slate-200" />
             <div className="space-y-2 p-3">
-              <Skeleton className="h-4 w-full bg-zinc-800/70" />
-              <Skeleton className="h-3 w-2/3 bg-zinc-800/70" />
+              <Skeleton className="h-4 w-full bg-slate-200" />
+              <Skeleton className="h-3 w-2/3 bg-slate-200" />
             </div>
           </div>
         ))}
@@ -54,12 +54,12 @@ export function VideoGrid({ categorySlug = null, queryKey }: VideoGridProps) {
   }
 
   if (videos.length === 0) {
-    return <p className="rounded-xl border border-white/10 bg-[#11141b] px-4 py-3 text-zinc-400">No videos found.</p>
+    return <p className="rounded bg-white px-4 py-3 text-slate-600 shadow-sm">No videos found.</p>
   }
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {videos.map((video) => (
           <VideoCard key={video.id} video={video} />
         ))}

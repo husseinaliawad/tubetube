@@ -20,8 +20,8 @@ export function VideoStoryboard({ thumbnailUrl, duration }: VideoStoryboardProps
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-sm font-semibold text-foreground">Storyboard</h2>
-        <p className="text-xs text-muted-foreground">
+        <h2 className="text-sm font-semibold text-slate-950">Storyboard</h2>
+        <p className="text-xs text-slate-600">
           Quick timeline preview frames
         </p>
       </div>
@@ -31,7 +31,7 @@ export function VideoStoryboard({ thumbnailUrl, duration }: VideoStoryboardProps
           const time = formatTimestamp(Math.floor(index * step))
 
           return (
-            <div key={index} className="overflow-hidden rounded-lg border border-white/10 bg-black/40">
+            <div key={index} className="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
               <div className="relative aspect-video">
                 <img
                   src={thumbnailUrl}
@@ -50,4 +50,3 @@ export function VideoStoryboard({ thumbnailUrl, duration }: VideoStoryboardProps
     </section>
   )
 }
-

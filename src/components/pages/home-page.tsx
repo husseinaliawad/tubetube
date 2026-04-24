@@ -9,10 +9,11 @@ export function HomePage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-white/10 bg-gradient-to-r from-[#151821] via-[#12161f] to-[#0f131b] p-5">
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Discover</p>
-        <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">Popular Videos</h2>
-        <p className="mt-1 text-sm text-zinc-400">Trending scenes updated from your latest imports.</p>
+      <section className="flex items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-semibold text-slate-950 md:text-3xl">Popular Videos</h2>
+          <p className="mt-1 text-sm text-slate-600">Fresh videos loaded from your backend.</p>
+        </div>
       </section>
       <AdSlot title="Top Banner Ad" />
       <VideoGrid categorySlug={selectedCategory} />

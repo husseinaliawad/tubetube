@@ -24,14 +24,14 @@ export function RelatedVideos({ currentVideoId }: RelatedVideosProps) {
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-base font-semibold text-foreground">Similar videos</h2>
-        <p className="text-xs text-muted-foreground">Matched by category and tags</p>
+        <h2 className="text-base font-semibold text-slate-950">Similar videos</h2>
+        <p className="text-xs text-slate-600">Matched by category and tags</p>
       </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="overflow-hidden rounded-xl border border-white/10 bg-[#1a1a1a]">
+            <div key={i} className="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
               <Skeleton className="h-36 w-full rounded-none" />
               <div className="space-y-2 p-3">
                 <Skeleton className="h-4 w-5/6" />
@@ -41,14 +41,14 @@ export function RelatedVideos({ currentVideoId }: RelatedVideosProps) {
           ))}
         </div>
       ) : videos.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No similar videos found.</p>
+        <p className="text-sm text-slate-600">No similar videos found.</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {videos.map((video) => (
             <button
               key={video.id}
               onClick={() => navigate({ type: 'watch', videoId: video.id })}
-              className="overflow-hidden rounded-xl border border-white/10 bg-[#1a1a1a] text-left transition-transform hover:-translate-y-1"
+              className="overflow-hidden rounded border border-slate-200 bg-white text-left shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md"
             >
               <div className="relative aspect-video">
                 <img src={video.thumbnailUrl} alt={video.title} className="h-full w-full object-cover" />
@@ -57,8 +57,8 @@ export function RelatedVideos({ currentVideoId }: RelatedVideosProps) {
                 </span>
               </div>
               <div className="space-y-1 p-3">
-                <h3 className="line-clamp-2 text-sm font-medium text-white">{video.title}</h3>
-                <p className="text-xs text-zinc-400">{formatViews(video.views)}</p>
+                <h3 className="line-clamp-2 text-sm font-medium text-slate-950">{video.title}</h3>
+                <p className="text-xs text-slate-600">{formatViews(video.views)}</p>
               </div>
             </button>
           ))}
@@ -67,4 +67,3 @@ export function RelatedVideos({ currentVideoId }: RelatedVideosProps) {
     </section>
   )
 }
-

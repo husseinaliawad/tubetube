@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Play, Bell, CircleUserRound } from 'lucide-react'
+import { Bell, CircleUserRound, Play, Search, Video } from 'lucide-react'
 import { useNavigation } from '@/store/navigation'
 
 export function TopBar() {
@@ -25,11 +25,11 @@ export function TopBar() {
       : null
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#0a0b0d]/95 px-3 py-3 backdrop-blur md:px-5">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 md:gap-5">
+    <header className="fixed left-0 right-0 top-0 z-50 border-b border-slate-200 bg-white px-3 py-2.5 shadow-sm md:px-5">
+      <div className="mx-auto flex max-w-[1600px] items-center gap-3 md:gap-5">
         <button
           onClick={() => navigate({ type: 'home' })}
-          className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 transition hover:bg-white/10"
+          className="shrink-0 rounded-lg px-1 py-1 text-left text-slate-950 transition hover:bg-slate-100 md:px-2"
         >
           <span className="flex items-center gap-2">
             <Play className="h-5 w-5 fill-red-500 text-red-500" />
@@ -39,23 +39,24 @@ export function TopBar() {
           </span>
         </button>
 
-        <form onSubmit={handleSearch} className="flex-1">
+        <form onSubmit={handleSearch} className="relative flex-1">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
           <input
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search videos, tags, categories..."
-            className="w-full rounded-xl border border-white/15 bg-[#12151b] px-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-red-500 focus:outline-none md:text-base"
+            className="w-full rounded border border-slate-300 bg-white py-3 pl-11 pr-4 text-sm text-slate-950 placeholder:text-slate-500 focus:border-sky-600 focus:outline-none md:text-base"
           />
         </form>
 
-        <div className="hidden items-center rounded-xl border border-white/12 bg-[#12151b] p-1 sm:flex">
+        <div className="hidden items-center rounded border border-slate-300 bg-slate-50 p-1 lg:flex">
           <button
             onClick={() => navigate({ type: 'search', query: 'straight' })}
-            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+            className={`rounded px-3 py-1.5 text-xs font-semibold transition ${
               activeVersion === 'straight'
                 ? 'bg-red-600 text-white'
-                : 'text-zinc-300 hover:bg-white/10'
+                : 'text-slate-700 hover:bg-slate-200'
             }`}
             title="Version - Straight"
           >
@@ -63,10 +64,10 @@ export function TopBar() {
           </button>
           <button
             onClick={() => navigate({ type: 'search', query: 'gay' })}
-            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+            className={`rounded px-3 py-1.5 text-xs font-semibold transition ${
               activeVersion === 'gay'
                 ? 'bg-red-600 text-white'
-                : 'text-zinc-300 hover:bg-white/10'
+                : 'text-slate-700 hover:bg-slate-200'
             }`}
             title="Version - Gay"
           >
@@ -74,45 +75,29 @@ export function TopBar() {
           </button>
         </div>
 
-        <div className="flex items-center gap-1 text-zinc-200 md:gap-2">
+        <div className="flex items-center gap-1 text-slate-700 md:gap-2">
+          <button
+            onClick={() => navigate({ type: 'upload' })}
+            title="Upload"
+            className="rounded-lg p-2 transition hover:bg-slate-100"
+          >
+            <Video className="h-5 w-5" />
+          </button>
           <button
             onClick={() => navigate({ type: 'notifications' })}
             title="Notifications"
-            className="rounded-lg p-2 transition hover:bg-white/10"
+            className="rounded-lg p-2 transition hover:bg-slate-100"
           >
             <Bell className="h-5 w-5" />
           </button>
           <button
             onClick={() => navigate({ type: 'settings' })}
             title="Profile"
-            className="rounded-lg p-2 transition hover:bg-white/10"
+            className="rounded-lg p-2 transition hover:bg-slate-100"
           >
             <CircleUserRound className="h-6 w-6" />
           </button>
         </div>
-      </div>
-
-      <div className="mx-auto mt-2 flex max-w-7xl items-center gap-2 sm:hidden">
-        <button
-          onClick={() => navigate({ type: 'search', query: 'straight' })}
-          className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
-            activeVersion === 'straight'
-              ? 'bg-red-600 text-white'
-              : 'border border-white/15 bg-[#12151b] text-zinc-300'
-          }`}
-        >
-          Straight
-        </button>
-        <button
-          onClick={() => navigate({ type: 'search', query: 'gay' })}
-          className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
-            activeVersion === 'gay'
-              ? 'bg-red-600 text-white'
-              : 'border border-white/15 bg-[#12151b] text-zinc-300'
-          }`}
-        >
-          Gay
-        </button>
       </div>
     </header>
   )
