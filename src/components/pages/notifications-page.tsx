@@ -29,25 +29,25 @@ export function NotificationsPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center">
-          <Bell className="h-5 w-5 text-primary" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100">
+          <Bell className="h-5 w-5 text-sky-700" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-foreground">Notifications</h1>
-          <p className="text-sm text-muted-foreground">Recent activity and updates</p>
+          <h1 className="text-xl font-bold text-slate-950">Notifications</h1>
+          <p className="text-sm text-slate-600">Recent activity and updates</p>
         </div>
       </div>
 
       <div className="space-y-3">
         {notifications.map((item) => (
-          <Card key={item.id}>
+          <Card key={item.id} className="border-slate-200 bg-white text-slate-950 shadow-sm">
             <CardContent className="pt-5 flex items-start justify-between gap-4">
               <div>
-                <p className="font-medium text-foreground">{item.title}</p>
-                <p className="text-sm text-muted-foreground mt-1">{item.text}</p>
-                <p className="text-xs text-muted-foreground mt-2">{item.time}</p>
+                <p className="font-medium text-slate-950">{item.title}</p>
+                <p className="mt-1 text-sm text-slate-600">{item.text}</p>
+                <p className="mt-2 text-xs text-slate-500">{item.time}</p>
               </div>
-              <Button variant="ghost" size="icon" title="Mark as read">
+              <Button variant="ghost" size="icon" title="Mark as read" className="text-slate-600 hover:bg-slate-100 hover:text-slate-950">
                 <CircleCheckBig className="h-5 w-5" />
               </Button>
             </CardContent>

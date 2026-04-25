@@ -23,23 +23,31 @@ export function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white px-2 pb-1.5 pt-2.5 shadow-[0_-2px_8px_rgba(15,23,42,0.08)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-zinc-950/95 px-2 pb-2 pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.20)] backdrop-blur">
       <div className="mx-auto flex max-w-4xl items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon
+          const active = isActive(item.key)
           return (
             <button
               key={item.key}
               onClick={() => navigate(item.page)}
               className={cn(
-                'flex min-w-[64px] flex-col items-center gap-1 rounded-lg px-3 py-1 text-xs transition',
-                isActive(item.key)
-                  ? 'text-sky-700'
-                  : 'text-slate-500 hover:text-slate-950'
+                'group flex min-w-[68px] flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-xs transition',
+                active
+                  ? 'bg-white/[0.07] text-white shadow-inner shadow-white/[0.04]'
+                  : 'text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-100'
               )}
             >
-              <Icon className="h-6 w-6" />
-              <span>{item.label}</span>
+              <Icon
+                className={cn(
+                  'h-6 w-6 transition',
+                  active ? 'text-sky-400' : 'text-zinc-400 group-hover:text-zinc-100'
+                )}
+              />
+              <span className={cn(active ? 'font-medium text-sky-100' : 'text-zinc-400')}>
+                {item.label}
+              </span>
             </button>
           )
         })}
