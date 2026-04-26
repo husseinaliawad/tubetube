@@ -2,39 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { buildAllowedVideoUrlWhere } from '@/lib/video-source'
-
-function scoreVideo(
-  video: {
-    categoryId: string | null
-    tags: Array<{ name: string }>
-    views: number
-    createdAt: Date
-  },
-  currentCategoryId: string | null,
-  currentTagNames: Set<string>
-) {
-  let score = 0
-
-  if (currentCategoryId && video.categoryId === currentCategoryId) {
-    score += 6
-  }
-
-  let sharedTags = 0
-  for (const tag of video.tags) {
-    if (currentTagNames.has(tag.name.toLowerCase())) {
-      sharedTags += 1
-    }
-  }
-  score += Math.min(4, sharedTags) * 3
-
-  const popularity = Math.min(3, Math.floor(video.views / 5000))
-  score += popularity
-
-  const ageHours = Math.max(1, (Date.now() - video.createdAt.getTime()) / (1000 * 60 * 60))
-  score += Math.max(0, 2 - ageHours / (24 * 7))
-
-  return score
-}
+import { buildSimilarityProfile, scoreRelatedVideo } from '@/lib/video-taxonomy'
 
 export async function GET(
   request: NextRequest,
@@ -49,6 +17,14 @@ export async function GET(
       select: {
         id: true,
         categoryId: true,
+        title: true,
+        description: true,
+        uploaderId: true,
+        category: {
+          select: {
+            slug: true,
+          },
+        },
         tags: { select: { name: true } },
       },
     })
@@ -57,17 +33,23 @@ export async function GET(
       return NextResponse.json({ error: 'Video not found' }, { status: 404 })
     }
 
-    const tagNames = currentVideo.tags
-      .map((tag) => tag.name.trim().toLowerCase())
-      .filter(Boolean)
-      .slice(0, 8)
-    const tagSet = new Set(tagNames)
+    const currentProfile = buildSimilarityProfile({
+      title: currentVideo.title,
+      description: currentVideo.description,
+      categorySlug: currentVideo.category?.slug ?? null,
+      tags: currentVideo.tags,
+    })
+
+    const signalTags = Array.from(currentProfile.tagSet).slice(0, 8)
+    const signalTokens = Array.from(currentProfile.tokenSet)
+      .filter((token) => token.length >= 3)
+      .slice(0, 6)
 
     const relatedSignalFilters: Prisma.VideoWhereInput[] = []
     if (currentVideo.categoryId) {
       relatedSignalFilters.push({ categoryId: currentVideo.categoryId })
     }
-    for (const tag of tagNames) {
+    for (const tag of signalTags) {
       relatedSignalFilters.push({
         tags: {
           some: {
@@ -76,17 +58,32 @@ export async function GET(
         },
       })
     }
+    for (const token of signalTokens) {
+      relatedSignalFilters.push({
+        OR: [
+          { title: { contains: token } },
+          { description: { contains: token } },
+        ],
+      })
+    }
+
+    const baseWhere: Prisma.VideoWhereInput = {
+      id: { not: id },
+      isPublished: true,
+      privacy: 'public',
+      ...buildAllowedVideoUrlWhere(),
+    }
 
     const videos = await db.video.findMany({
       where: {
-        id: { not: id },
-        isPublished: true,
-        privacy: 'public',
-        ...buildAllowedVideoUrlWhere(),
+        ...baseWhere,
         ...(relatedSignalFilters.length > 0 ? { OR: relatedSignalFilters } : {}),
       },
-      orderBy: { createdAt: 'desc' },
-      take: 80,
+      orderBy: [
+        { views: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      take: 100,
       include: {
         uploader: {
           select: {
@@ -112,12 +109,63 @@ export async function GET(
       },
     })
 
-    const ranked = videos
+    const fallbackVideos =
+      videos.length >= limit
+        ? []
+        : await db.video.findMany({
+            where: {
+              ...baseWhere,
+              id: {
+                notIn: [id, ...videos.map((video) => video.id)],
+              },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: Math.max(limit, 24),
+            include: {
+              uploader: {
+                select: {
+                  id: true,
+                  name: true,
+                  handle: true,
+                  avatar: true,
+                  subscribers: true,
+                },
+              },
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+              tags: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          })
+
+    const ranked = [...videos, ...fallbackVideos]
       .map((video) => ({
         video,
-        score: scoreVideo(video, currentVideo.categoryId, tagSet),
+        score: scoreRelatedVideo({
+          current: currentProfile,
+          candidate: buildSimilarityProfile({
+            title: video.title,
+            description: video.description,
+            categorySlug: video.category?.slug ?? null,
+            tags: video.tags,
+          }),
+          views: video.views,
+          createdAt: video.createdAt,
+          sameUploader: video.uploaderId === currentVideo.uploaderId,
+        }),
       }))
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score
+        return b.video.createdAt.getTime() - a.video.createdAt.getTime()
+      })
       .slice(0, limit)
       .map((entry) => entry.video)
 

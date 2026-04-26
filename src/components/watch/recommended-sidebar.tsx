@@ -16,7 +16,8 @@ export function RecommendedSidebar({ currentVideoId }: RecommendedSidebarProps) 
 
   const { data, isLoading } = useQuery<{ videos: Video[] }>({
     queryKey: ['recommended', currentVideoId],
-    queryFn: () => fetch('/api/videos?limit=20').then((r) => r.json()),
+    queryFn: () => fetch(`/api/videos/related/${currentVideoId}?limit=20`).then((r) => r.json()),
+    enabled: !!currentVideoId,
     staleTime: 1000 * 60 * 2,
   })
 

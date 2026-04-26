@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminRequest } from '@/lib/admin-auth'
 import { buildAllowedVideoUrlWhere, isAllowedVideoSource } from '@/lib/video-source'
+import { buildPreciseTags, inferCategoryFromVideo } from '@/lib/video-taxonomy'
 
 type StatusFilter = 'all' | 'published' | 'draft' | 'public' | 'private' | 'unlisted'
 
@@ -144,16 +145,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Uploader not found' }, { status: 404 })
     }
 
-    if (categoryId) {
-      const category = await db.category.findUnique({ where: { id: categoryId } })
-      if (!category) {
-        return NextResponse.json({ error: 'Category not found' }, { status: 404 })
-      }
+    const categories = await db.category.findMany({
+      select: { id: true, slug: true, name: true },
+    })
+
+    if (categoryId && !categories.some((category) => category.id === categoryId)) {
+      return NextResponse.json({ error: 'Category not found' }, { status: 404 })
     }
 
-    const cleanTags = Array.isArray(tags)
-      ? tags.map((tag) => tag.trim()).filter(Boolean).slice(0, 20)
-      : []
+    const cleanTags = buildPreciseTags({
+      title,
+      description,
+      tags: Array.isArray(tags) ? tags : [],
+      max: 20,
+    })
+
+    const inferredCategorySlug = inferCategoryFromVideo({
+      title,
+      description,
+      tags: cleanTags,
+      categories,
+    })
+
+    const inferredCategoryId =
+      inferredCategorySlug
+        ? categories.find((category) => category.slug.toLowerCase() === inferredCategorySlug)?.id ?? null
+        : null
 
     const created = await db.video.create({
       data: {
@@ -163,7 +180,7 @@ export async function POST(request: NextRequest) {
         videoUrl: videoUrl.trim(),
         duration: typeof duration === 'number' && duration >= 0 ? Math.floor(duration) : 0,
         uploaderId,
-        categoryId: categoryId || null,
+        categoryId: categoryId || inferredCategoryId,
         privacy:
           privacy === 'private' || privacy === 'unlisted' || privacy === 'public'
             ? privacy
