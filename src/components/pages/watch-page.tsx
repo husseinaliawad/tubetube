@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { VideoPlayer } from '@/components/watch/video-player'
 import { CommentSection } from '@/components/watch/comment-section'
 import { RecommendedSidebar } from '@/components/watch/recommended-sidebar'
@@ -16,10 +16,18 @@ interface WatchPageProps {
 }
 
 export function WatchPage({ videoId }: WatchPageProps) {
-  const { data, isLoading } = useQuery<{ video: Video }>({
+  const { data, isPending, isError } = useQuery<{ video: Video }>({
     queryKey: ['video', videoId],
-    queryFn: () => fetch(`/api/videos/${videoId}`).then((r) => r.json()),
+    queryFn: async () => {
+      const response = await fetch(`/api/videos/${videoId}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch video')
+      }
+      return response.json()
+    },
     enabled: !!videoId,
+    placeholderData: keepPreviousData,
+    retry: 1,
   })
 
   // Increment view count on mount
@@ -29,7 +37,7 @@ export function WatchPage({ videoId }: WatchPageProps) {
     }
   }, [videoId])
 
-  if (isLoading) {
+  if (isPending && !data?.video) {
     return (
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-6">
@@ -51,6 +59,17 @@ export function WatchPage({ videoId }: WatchPageProps) {
             ))}
           </div>
         </div>
+      </div>
+    )
+  }
+
+  if (isError && !data?.video) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <p className="text-xl font-semibold text-slate-950">Failed to load scene</p>
+        <p className="mt-2 text-slate-600">
+          Please refresh the page or try another video.
+        </p>
       </div>
     )
   }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useNavigation } from '@/store/navigation'
 import { formatViews, formatDuration } from '@/lib/format'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -16,9 +16,17 @@ export function RecommendedSidebar({ currentVideoId }: RecommendedSidebarProps) 
 
   const { data, isLoading } = useQuery<{ videos: Video[] }>({
     queryKey: ['recommended', currentVideoId],
-    queryFn: () => fetch(`/api/videos/related/${currentVideoId}?limit=20`).then((r) => r.json()),
+    queryFn: async () => {
+      const response = await fetch(`/api/videos/related/${currentVideoId}?limit=20`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch recommendations')
+      }
+      return response.json()
+    },
     enabled: !!currentVideoId,
     staleTime: 1000 * 60 * 2,
+    placeholderData: keepPreviousData,
+    retry: 1,
   })
 
   const videos = (data?.videos ?? []).filter((v) => v.id !== currentVideoId)
